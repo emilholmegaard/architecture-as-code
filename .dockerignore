@@ -1,0 +1,20 @@
+# Git
+.git
+.gitignore
+
+# Maven
+target/
+!target/architecture-as-code-1.0.0.jar
+
+# IDE files
+.idea/
+*.iml
+.vscode/
+.settings/
+.project
+.classpath
+
+# Misc
+*.log
+*.tmp
+/logs/

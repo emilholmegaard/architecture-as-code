@@ -7,6 +7,7 @@ This repository demonstrates Architecture-as-Code principles using ArchUnit test
 ## System Description
 
 The system is a modern e-commerce platform that includes:
+
 - **Product Catalog Management**: Browse and search products
 - **Order Processing**: Shopping cart, checkout, and payment processing
 - **Customer Management**: User profiles and order history
@@ -56,8 +57,10 @@ See `src/main/resources/architecture-diagram.puml` for the PlantUML system archi
 ## Running Architecture Tests
 
 ### Prerequisites
-- Java 17+
+
+- Java 23+
 - Maven 3.8+
+- Docker (optional)
 
 ### Execute Tests
 
@@ -75,6 +78,7 @@ mvn test -Dtest=*FitnessFunction
 ## Architecture Rules
 
 ### Layer Dependencies
+
 - Domain layer has no dependencies on other layers
 - Application layer depends only on Domain
 - Infrastructure depends on Application and Domain
@@ -82,12 +86,14 @@ mvn test -Dtest=*FitnessFunction
 - Config can be accessed by Infrastructure and Presentation
 
 ### Package Conventions
+
 - Controllers must be in `presentation.rest` package
 - Entities must be in `domain.model` package
 - Repositories must be in `infrastructure.persistence` package
 - Use cases must be in `application.usecase` package
 
 ### Naming Conventions
+
 - Controllers must end with "Controller"
 - Services must end with "Service"
 - Repositories must end with "Repository"
@@ -97,19 +103,51 @@ mvn test -Dtest=*FitnessFunction
 ## Fitness Functions
 
 ### 1. Modularity Fitness Function
+
 Measures the modularity of the system based on package cohesion and coupling.
 
 ### 2. Coupling Fitness Function
+
 Monitors the coupling between packages and ensures it stays within acceptable thresholds.
 
 ### 3. Cohesion Fitness Function
+
 Evaluates the cohesion within packages to ensure related functionality stays together.
 
 ### 4. Complexity Fitness Function
+
 Tracks cyclomatic complexity and ensures methods don't exceed complexity thresholds.
 
 ### 5. Test Coverage Fitness Function
+
 Ensures minimum test coverage for critical components.
+
+## Docker Support
+
+The application can be containerized using Docker. The provided Dockerfile uses a multi-stage build process to create an optimized container image.
+
+### Building the Docker Image
+
+```bash
+docker build -t webshop .
+```
+
+### Running the Container
+
+```bash
+docker run -p 8080:8080 webshop
+```
+
+The application will be accessible at `http://localhost:8080`.
+
+### Docker Configuration
+
+The Docker setup includes:
+
+- Multi-stage build for optimal image size
+- OpenJDK 23 (Temurin) as the base image
+- Exposed port 8080 for the web application
+- Automatic inclusion of the compiled JAR file
 
 ## Metrics Dashboard
 
