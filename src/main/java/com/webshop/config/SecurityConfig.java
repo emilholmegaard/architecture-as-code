@@ -15,19 +15,19 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
-    
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-            .csrf().disable() // For demo purposes
-            .authorizeHttpRequests(authz -> authz
-                .requestMatchers("/api/products/**").permitAll()
-                .requestMatchers("/api/orders/**").authenticated()
-                .requestMatchers("/api/cases/**").authenticated()
-                .anyRequest().authenticated()
-            )
-            .httpBasic();
-        
+                .csrf(csrf -> csrf.disable()) // For demo purposes
+                .authorizeHttpRequests(authz -> authz
+                        .requestMatchers("/api/products/**").permitAll()
+                        .requestMatchers("/api/orders/**").authenticated()
+                        .requestMatchers("/api/cases/**").authenticated()
+                        .anyRequest().authenticated())
+                .httpBasic(basic -> {
+                });
+
         return http.build();
     }
 }
