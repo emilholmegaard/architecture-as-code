@@ -7,6 +7,10 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 
+import com.webshop.domain.model.vo.Address;
+import com.webshop.domain.model.vo.EmailAddress;
+import com.webshop.domain.model.vo.PhoneNumber;
+
 /**
  * Customer entity representing web shop users.
  * 
@@ -23,11 +27,14 @@ public class Customer {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String email;
+    @Embedded
+    private EmailAddress email;
     private String firstName;
     private String lastName;
-    private String phoneNumber;
-    private String address;
+    @Embedded
+    private PhoneNumber phoneNumber;
+    @Embedded
+    private Address address;
     @Enumerated(EnumType.STRING)
     private CustomerType type;
     private LocalDateTime registrationDate;

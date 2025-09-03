@@ -5,8 +5,12 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
+
+import com.webshop.domain.model.vo.Money;
+import com.webshop.domain.model.vo.ProductCategory;
+import com.webshop.domain.model.vo.Quantity;
+import com.webshop.domain.model.vo.SKU;
 
 /**
  * Product entity representing items in the web shop catalog.
@@ -24,12 +28,16 @@ public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String sku;
+    @Embedded
+    private SKU sku;
     private String name;
     private String description;
-    private BigDecimal price;
-    private Integer stockQuantity;
-    private String category;
+    @Embedded
+    private Money price;
+    @Embedded
+    private Quantity stockQuantity;
+    @Enumerated(EnumType.STRING)
+    private ProductCategory category;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -39,7 +47,7 @@ public class Product {
      * @return true if stock is available
      */
     public boolean isAvailable() {
-        return stockQuantity != null && stockQuantity > 0;
+        return stockQuantity != null && !stockQuantity.isZero();
     }
 
     /**
@@ -48,10 +56,10 @@ public class Product {
      * @param quantity amount to reduce
      * @throws IllegalStateException if insufficient stock
      */
-    public void reduceStock(int quantity) {
-        if (stockQuantity < quantity) {
+    public void reduceStock(Quantity quantity) {
+        if (stockQuantity.isLessThan(quantity)) {
             throw new IllegalStateException("Insufficient stock for product: " + sku);
         }
-        stockQuantity -= quantity;
+        stockQuantity = stockQuantity.subtract(quantity);
     }
 }

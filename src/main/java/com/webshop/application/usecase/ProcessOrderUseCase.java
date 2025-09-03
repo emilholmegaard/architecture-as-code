@@ -4,6 +4,7 @@ import com.webshop.application.port.in.OrderPort;
 import com.webshop.application.port.out.PaymentGateway;
 import com.webshop.application.port.out.NotificationService;
 import com.webshop.domain.model.Order;
+import com.webshop.domain.model.vo.Money;
 import com.webshop.domain.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;

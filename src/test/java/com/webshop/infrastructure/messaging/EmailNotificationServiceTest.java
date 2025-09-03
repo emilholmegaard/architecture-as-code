@@ -3,13 +3,16 @@ package com.webshop.infrastructure.messaging;
 import com.webshop.domain.model.Case;
 import com.webshop.domain.model.Order;
 import com.webshop.domain.model.Return;
+import com.webshop.domain.model.vo.Money;
+import com.webshop.domain.model.vo.OrderNumber;
+import com.webshop.domain.model.vo.Quantity;
 import com.webshop.domain.service.CustomerService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.math.BigDecimal;
+import java.util.Currency;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
@@ -28,12 +31,13 @@ class EmailNotificationServiceTest {
     @Test
     void sendOrderConfirmation_ValidOrder_ShouldSendEmail() {
         // Arrange
+        Currency usd = Currency.getInstance("USD");
         Order order = new Order();
-        order.setOrderNumber("ORD-123");
+        order.setOrderNumber(OrderNumber.of("ORD-123"));
         order.setCustomerId(1L);
         Order.OrderItem item = new Order.OrderItem();
-        item.setQuantity(1);
-        item.setUnitPrice(new BigDecimal("100.00"));
+        item.setQuantity(Quantity.of(1));
+        item.setUnitPrice(Money.of(100.00, usd));
         order.getItems().add(item);
 
         // Act & Assert

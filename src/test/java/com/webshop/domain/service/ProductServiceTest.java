@@ -1,13 +1,16 @@
 package com.webshop.domain.service;
 
 import com.webshop.domain.model.Product;
+import com.webshop.domain.model.vo.Money;
+import com.webshop.domain.model.vo.ProductCategory;
+import com.webshop.domain.model.vo.Quantity;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.math.BigDecimal;
 import java.util.Arrays;
+import java.util.Currency;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -25,18 +28,19 @@ class ProductServiceTest {
     @Test
     void filterByPriceRange_WithinRange_ReturnsFilteredProducts() {
         // Arrange
+        Currency usd = Currency.getInstance("USD");
         Product product1 = new Product();
-        product1.setPrice(new BigDecimal("50.00"));
+        product1.setPrice(Money.of(50.00, usd));
 
         Product product2 = new Product();
-        product2.setPrice(new BigDecimal("150.00"));
+        product2.setPrice(Money.of(150.00, usd));
 
         Product product3 = new Product();
-        product3.setPrice(new BigDecimal("250.00"));
+        product3.setPrice(Money.of(250.00, usd));
 
         List<Product> products = Arrays.asList(product1, product2, product3);
-        BigDecimal minPrice = new BigDecimal("40.00");
-        BigDecimal maxPrice = new BigDecimal("200.00");
+        Money minPrice = Money.of(40.00, usd);
+        Money maxPrice = Money.of(200.00, usd);
 
         // Act
         List<Product> result = productService.filterByPriceRange(products, minPrice, maxPrice);
@@ -49,9 +53,10 @@ class ProductServiceTest {
     @Test
     void requiresSpecialHandling_FragileProduct_ReturnsTrue() {
         // Arrange
+        Currency usd = Currency.getInstance("USD");
         Product product = new Product();
-        product.setCategory("FRAGILE");
-        product.setPrice(new BigDecimal("50.00"));
+        product.setCategory(ProductCategory.ELECTRONICS); // Electronics is considered fragile
+        product.setPrice(Money.of(50.00, usd));
 
         // Act
         boolean result = productService.requiresSpecialHandling(product);
@@ -63,9 +68,10 @@ class ProductServiceTest {
     @Test
     void requiresSpecialHandling_ExpensiveProduct_ReturnsTrue() {
         // Arrange
+        Currency usd = Currency.getInstance("USD");
         Product product = new Product();
-        product.setCategory("NORMAL");
-        product.setPrice(new BigDecimal("1500.00"));
+        product.setCategory(ProductCategory.CLOTHING); // Not fragile or special handling
+        product.setPrice(Money.of(1500.00, usd));
 
         // Act
         boolean result = productService.requiresSpecialHandling(product);
@@ -77,9 +83,10 @@ class ProductServiceTest {
     @Test
     void requiresSpecialHandling_RegularProduct_ReturnsFalse() {
         // Arrange
+        Currency usd = Currency.getInstance("USD");
         Product product = new Product();
-        product.setCategory("NORMAL");
-        product.setPrice(new BigDecimal("50.00"));
+        product.setCategory(ProductCategory.CLOTHING); // Not fragile or special handling
+        product.setPrice(Money.of(50.00, usd));
 
         // Act
         boolean result = productService.requiresSpecialHandling(product);
@@ -92,38 +99,38 @@ class ProductServiceTest {
     void calculateRestockQuantity_VeryLowStock_Returns100() {
         // Arrange
         Product product = new Product();
-        product.setStockQuantity(5);
+        product.setStockQuantity(Quantity.of(5));
 
         // Act
-        int result = productService.calculateRestockQuantity(product);
+        Quantity result = productService.calculateRestockQuantity(product);
 
         // Assert
-        assertThat(result).isEqualTo(100);
+        assertThat(result.getValue()).isEqualTo(100);
     }
 
     @Test
     void calculateRestockQuantity_LowStock_Returns50() {
         // Arrange
         Product product = new Product();
-        product.setStockQuantity(25);
+        product.setStockQuantity(Quantity.of(25));
 
         // Act
-        int result = productService.calculateRestockQuantity(product);
+        Quantity result = productService.calculateRestockQuantity(product);
 
         // Assert
-        assertThat(result).isEqualTo(50);
+        assertThat(result.getValue()).isEqualTo(50);
     }
 
     @Test
     void calculateRestockQuantity_AdequateStock_Returns0() {
         // Arrange
         Product product = new Product();
-        product.setStockQuantity(75);
+        product.setStockQuantity(Quantity.of(75));
 
         // Act
-        int result = productService.calculateRestockQuantity(product);
+        Quantity result = productService.calculateRestockQuantity(product);
 
         // Assert
-        assertThat(result).isEqualTo(0);
+        assertThat(result.getValue()).isEqualTo(0);
     }
 }

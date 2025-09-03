@@ -2,8 +2,9 @@ package com.webshop.domain.service;
 
 import com.webshop.domain.model.Order;
 import com.webshop.domain.model.Product;
+import com.webshop.domain.model.vo.Money;
 import org.springframework.stereotype.Service;
-import java.math.BigDecimal;
+import java.util.Currency;
 import java.util.List;
 
 /**
@@ -38,14 +39,17 @@ public class OrderService {
      * @param isVip whether customer is VIP
      * @return discount amount
      */
-    public BigDecimal calculateDiscount(Order order, boolean isVip) {
-        BigDecimal total = order.getTotalAmount();
-        BigDecimal discountRate = isVip ? new BigDecimal("0.15") : new BigDecimal("0.05");
+    public Money calculateDiscount(Order order, boolean isVip) {
+        Money total = order.getTotalAmount();
+        double discountRate = isVip ? 0.15 : 0.05;
 
-        if (total.compareTo(new BigDecimal("100")) > 0) {
+        Currency currency = total.getCurrency();
+        Money threshold = Money.of(100.0, currency);
+
+        if (total.isGreaterThan(threshold)) {
             return total.multiply(discountRate);
         }
-        return BigDecimal.ZERO;
+        return Money.zero(currency);
     }
 
     /**

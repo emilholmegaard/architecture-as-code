@@ -2,13 +2,15 @@ package com.webshop.domain.service;
 
 import com.webshop.domain.model.Order;
 import com.webshop.domain.model.Product;
+import com.webshop.domain.model.vo.Money;
+import com.webshop.domain.model.vo.Quantity;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.math.BigDecimal;
 import java.util.Collections;
+import java.util.Currency;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -33,7 +35,7 @@ class OrderServiceTest {
 
         Product availableProduct = new Product();
         availableProduct.setId(1L);
-        availableProduct.setStockQuantity(10);
+        availableProduct.setStockQuantity(Quantity.of(10));
         List<Product> availableProducts = Collections.singletonList(availableProduct);
 
         // Act
@@ -60,27 +62,29 @@ class OrderServiceTest {
     @Test
     void calculateDiscount_ForVipCustomerAndLargeOrder_AppliesVipDiscount() {
         // Arrange
+        Currency usd = Currency.getInstance("USD");
         Order order = new Order();
-        order.setTotalAmount(new BigDecimal("200.00"));
+        order.setTotalAmount(Money.of(200.00, usd));
 
         // Act
-        BigDecimal discount = orderService.calculateDiscount(order, true);
+        Money discount = orderService.calculateDiscount(order, true);
 
         // Assert
-        assertThat(discount).isEqualByComparingTo(new BigDecimal("30.00")); // 15% of 200
+        assertThat(discount.getAmount().doubleValue()).isEqualTo(30.00); // 15% of 200
     }
 
     @Test
     void calculateDiscount_ForRegularCustomerAndSmallOrder_AppliesNoDiscount() {
         // Arrange
+        Currency usd = Currency.getInstance("USD");
         Order order = new Order();
-        order.setTotalAmount(new BigDecimal("50.00"));
+        order.setTotalAmount(Money.of(50.00, usd));
 
         // Act
-        BigDecimal discount = orderService.calculateDiscount(order, false);
+        Money discount = orderService.calculateDiscount(order, false);
 
         // Assert
-        assertThat(discount).isEqualByComparingTo(BigDecimal.ZERO);
+        assertThat(discount.getAmount().doubleValue()).isEqualTo(0.0);
     }
 
     @Test

@@ -3,6 +3,7 @@ package com.webshop.application.usecase;
 import com.webshop.application.port.out.NotificationService;
 import com.webshop.application.port.out.PaymentGateway;
 import com.webshop.domain.model.Order;
+import com.webshop.domain.model.vo.Money;
 import com.webshop.domain.service.OrderService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -10,7 +11,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.math.BigDecimal;
+import java.util.Currency;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -39,9 +40,10 @@ class ProcessOrderUseCaseTest {
     @Test
     void createOrder_ValidOrder_Success() {
         // Arrange
+        Currency usd = Currency.getInstance("USD");
         Order order = new Order();
         order.setCustomerId(1L);
-        order.setTotalAmount(new BigDecimal("100.00"));
+        order.setTotalAmount(Money.of(100.00, usd));
 
         when(orderService.validateOrder(any(), any())).thenReturn(true);
         when(paymentGateway.processPayment(any(), any())).thenReturn(true);
@@ -61,9 +63,10 @@ class ProcessOrderUseCaseTest {
     @Test
     void createOrder_PaymentFailed_ThrowsException() {
         // Arrange
+        Currency usd = Currency.getInstance("USD");
         Order order = new Order();
         order.setCustomerId(1L);
-        order.setTotalAmount(new BigDecimal("100.00"));
+        order.setTotalAmount(Money.of(100.00, usd));
 
         when(orderService.validateOrder(any(), any())).thenReturn(true);
         when(paymentGateway.processPayment(any(), any())).thenReturn(false);
